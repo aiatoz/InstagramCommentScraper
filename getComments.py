@@ -93,8 +93,15 @@ def getComments(instURL):
     return instaData
 
 
-
-
+def getUrls():
+    pUrl = input("Type profile URL : ")
+    allUrls = [pUrl]
+    return allUrls
+    
+    #GetPostURLs from profile
+    #Common URL structure
+    #a class = "x1i10hfl ....." href="/p/CzBbZ9xIWh4/
+    #For reel, it will be /reel/CzBbsexsyhU/
 
 instURL=input("Enter the URL : ")
 instaData = getComments(instURL)
