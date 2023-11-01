@@ -28,7 +28,6 @@ def cleanHashTags(content): #Replaces all anchors with hashTags
     content = re.sub(CLEANR, '', content)
     return content
 
-    
 
 def setClasses():
     '''cmntClass = input("\nEnter the comment class :")
@@ -88,11 +87,10 @@ def getComments(instURL):
             if(not(('#' in content) or ('@' in content))): #Not hash tags, not mentions
                 skipContent = 1
         
-        if(skipContent == 0):
+        if(skipContent == 0 and content != ''):
             print(content)
             instaComment = content
-            
-            #----------------------------------------Preparing data-----------------------------------------------
+            #-------------------------------------Preparing data----------------------------------------------
             instaData.append(['--',instaComment,instaID])
         
     return instaData
@@ -127,13 +125,47 @@ def getUrls(pUrl):
     return allUrls
 
 
-allUrls = getUrls(input("Type profile URL : "))
+def getUrlsFromFile():
+    allUrls = []
+    
+    file = open('links.txt', 'r')
+    Lines = file.readlines()
+     
+    count = 0
+    # Strips the newline character
+    for line in Lines:
+        count += 1
+        print("Line{}: {}".format(count, line.strip()))
+        allUrls.append(line)
+        
+    file.close()
+    return allUrls
+
+
+
+
+#Getting URLs from Profile directly | Uncomment to enable----------------------------------------------------
+'''allUrls = getUrls(input("Type profile URL : "))
+
+for posts in allUrls:
+    instURL = posts
+    instaData = getComments(instURL)
+    writeCSV(instaData)'''
+#------------------------------------------------------------------------------------------------------------
+
+
+#Getting data from Direct Post URL | Uncomment to enable-----------------------------------------------------
+'''instURL = 'https://www.instagram.com/p/Cy_z2tRBKdV/'
+instaData = getComments(instURL)
+writeCSV(instaData)'''
+#------------------------------------------------------------------------------------------------------------
+
+
+#Getting URLs from file directly | Uncomment to enable-------------------------------------------------------
+allUrls = getUrlsFromFile()
 
 for posts in allUrls:
     instURL = posts
     instaData = getComments(instURL)
     writeCSV(instaData)
-
-'''instURL = 'https://www.instagram.com/reel/Cy9b2u5PV25/'
-instaData = getComments(instURL)
-writeCSV(instaData)'''
+#------------------------------------------------------------------------------------------------------------
