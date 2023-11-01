@@ -1,0 +1,37 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Nov  1 13:38:31 2023
+
+@author: Krishna
+"""
+from selenium import webdriver
+
+with open('links.txt', 'at', newline='', encoding='utf-8') as f:
+    
+    driver = webdriver.Chrome()
+    urls = []
+    
+    
+    #Collecting all URLs-------------------------------------------------------
+    input("Press any key when you're ready")
+    for i in range(0, len(driver.window_handles), 1):
+        driver.switch_to.window(driver.window_handles[i])
+        urls.append(driver.current_url)
+    
+    
+    #Removing redundancy-------------------------------------------------------      
+    urls = list(dict.fromkeys(urls))
+    
+    
+    
+    #Writing to the file-------------------------------------------------------      
+    for url in urls:
+        f.write(f"{url}\n")
+    f.close()
+    
+    '''with open('/path/to/filename.txt', mode='wt', encoding='utf-8') as myfile:
+    myfile.write('\n'.join(lines))'''
+        
+    print(urls)
+    print("\n\n\n\nDone")
+    driver.quit()
