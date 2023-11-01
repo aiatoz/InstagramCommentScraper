@@ -126,18 +126,14 @@ def getUrls(pUrl):
         
     return allUrls
 
-'''
+
 allUrls = getUrls(input("Type profile URL : "))
 
 for posts in allUrls:
     instURL = posts
     instaData = getComments(instURL)
     writeCSV(instaData)
-'''
 
-instURL = 'https://www.instagram.com/reel/Cy9b2u5PV25/'
+'''instURL = 'https://www.instagram.com/reel/Cy9b2u5PV25/'
 instaData = getComments(instURL)
-writeCSV(instaData)
-
-
-
+writeCSV(instaData)'''
