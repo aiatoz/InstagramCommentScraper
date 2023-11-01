@@ -23,26 +23,22 @@ import csv
 #import os
 
 
-def getTextFromAnchor(content): #To separate anchor content
-    cleanAnchor = map(''.join, re.findall(r'<a\s[^>]*>([^<]*)</a>|\b(\w+://[^<>\'"\t\r\n\xc2\xa0]*[^<>\'"\t\r\n\xc2\xa0 .,()])', content))
-    return list(cleanAnchor)
-
-
-def cleanHashTags(content): #Replaces all anchors with mentioned IDs
-    #cleanAnchor will have the mentioned ID text 
-    cleanAnchor = getTextFromAnchor(content)
-    for i in cleanAnchor:
-        leftOut = content.split(i)              #Splits using each of the ids
-        woAnchor = leftOut[0].split('<a ')[0]   #Leaves the anchor tag and takes it's left part
-        content = woAnchor+i+leftOut[1][4:]     #Combines the left + mentioned_id + right
+def cleanHashTags(content): #Replaces all anchors with hashTags
+    CLEANR = re.compile('<.*?>|&([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-f]{1,6});')
+    content = re.sub(CLEANR, '', content)
     return content
+
     
 
 def setClasses():
-    cmntClass = input("\nEnter the comment class :")
+    '''cmntClass = input("\nEnter the comment class :")
     #_aacl, #Span covering Comments. #The classes will change, so correct it. Previously _aade
     idClass = input("\nEnter the ID class :")
-    #If not logged in, use h3 class, Previously _a9zc
+    #If not logged in, use h3 class, Previously _a9zc'''
+    
+    
+    cmntClass, idClass = '',''
+    
     if(cmntClass=='' and idClass==''):
         cmntClass, idClass = '_aacl','_a9zc'
     return cmntClass, idClass
@@ -69,41 +65,77 @@ def getComments(instURL):
     #---------------------------------------------------Get Data--------------------------------------------------
     elements = driver.find_elements(By.CLASS_NAME,cmntClass)
     instaData = []
-    for e in elements[2:-1]:#Trim down the post content and leave the comments. If you need to see, try removing the slice
+    for e in elements[2:-2]:#Trim down the post content and leave the comments. If you need to see, try removing the slice
         content = e.get_attribute('innerHTML')
+        
         #-----------------------------------------------Get IDs---------------------------------------------------
         try:
             idElement = driver.find_element(locate_with(By.CLASS_NAME, idClass).near(e))
             idContent = idElement.get_attribute('innerHTML')
             
-            print(getTextFromAnchor(idContent)[0])
-            instaID = getTextFromAnchor(idContent)[0]
+            print(cleanHashTags(idContent))
+            instaID = cleanHashTags(idContent)
         except:#Reached end of comments
             break
         #---------------------------------------------Get Comments------------------------------------------------
+        
+        #----------------------------------------------Anchors----------------------------------------------------
+        
+        skipContent = 0
         if '<a' in content:
-            #Checks for mentions in the comment
             content = cleanHashTags(content)
+                
+            if(not(('#' in content) or ('@' in content))): #Not hash tags, not mentions
+                skipContent = 1
+        
+        if(skipContent == 0):
+            print(content)
+            instaComment = content
             
-        print(content)
-        instaComment = content
-        #------------Preparing data-------------#
-        instaData.append(['--',instaComment,instaID])
+            #----------------------------------------Preparing data-----------------------------------------------
+            instaData.append(['--',instaComment,instaID])
         
     return instaData
 
 
-def getUrls():
-    pUrl = input("Type profile URL : ")
-    allUrls = [pUrl]
-    return allUrls
-    
-    #GetPostURLs from profile
-    #Common URL structure
-    #a class = "x1i10hfl ....." href="/p/CzBbZ9xIWh4/
-    #For reel, it will be /reel/CzBbsexsyhU/
+def setProfClass():
+    #profClass = input("\nEnter the post class :")
+    profClass = 'x1i10hfl' 
+    if(profClass ==''):
+        profClass = '_aacl'
+    return profClass
 
-instURL=input("Enter the URL : ")
+
+def getUrls(pUrl):
+    #pUrl = input("Type profile URL : ")
+    #pUrl = "https://www.instagram.com/therock/"
+    allUrls = []
+    
+    driver = webdriver.Chrome()
+    driver.get(pUrl)
+    driver.implicitly_wait(30)
+    
+    profClass = setProfClass()
+    posts = driver.find_elements(By.CLASS_NAME,profClass)
+    
+    for p in posts[:]:
+        pHref = p.get_attribute('href')
+        if(('https://www.instagram.com/reel/' in str(pHref)) or ('https://www.instagram.com/p/' in str(pHref))):
+            print(pHref)
+            allUrls.append(pHref)
+        
+    return allUrls
+
+'''
+allUrls = getUrls(input("Type profile URL : "))
+
+for posts in allUrls:
+    instURL = posts
+    instaData = getComments(instURL)
+    writeCSV(instaData)
+'''
+
+instURL = 'https://www.instagram.com/reel/Cy9b2u5PV25/'
 instaData = getComments(instURL)
 writeCSV(instaData)
 
