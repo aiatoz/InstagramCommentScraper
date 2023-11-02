@@ -9,6 +9,7 @@ from selenium import webdriver
 with open('links.txt', 'at', newline='', encoding='utf-8') as f:
     
     driver = webdriver.Chrome()
+    driver.get("https://www.instagram.com/")
     urls = []
     
     
@@ -29,8 +30,7 @@ with open('links.txt', 'at', newline='', encoding='utf-8') as f:
         f.write(f"{url}\n")
     f.close()
     
-    '''with open('/path/to/filename.txt', mode='wt', encoding='utf-8') as myfile:
-    myfile.write('\n'.join(lines))'''
+    '''LOGIN TO INSTA, ONCE IT'S OPENED, OPEN MAXIMUM TABS'''
         
     print(urls)
     print("\n\n\n\nDone")
