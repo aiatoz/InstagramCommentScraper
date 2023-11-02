@@ -91,7 +91,7 @@ def getComments(instURL):
             print(content)
             instaComment = content
             #-------------------------------------Preparing data----------------------------------------------
-            instaData.append(['--',instaComment,instaID])
+            instaData.append(['--',instaComment,instaID,instURL])
         
     return instaData
 
